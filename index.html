@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精美记账流水</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .header h1 {
+            position: relative;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            position: relative;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5ee;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        .records-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+        }
+        
+        .record {
+            padding: 18px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .record:hover {
+            background-color: #f9f9ff;
+            border-radius: 10px;
+            transform: translateX(5px);
+        }
+        
+        .record:last-child {
+            border-bottom: none;
+        }
+        
+        .record-info {
+            flex: 1;
+        }
+        
+        .record-description {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .record-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .record-date {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .record-amount {
+            font-weight: bold;
+            font-size: 18px;
+            color: #e74c3c;
+        }
+        
+        .total {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f4 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 18px;
+            color: #2c3e50;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .total span {
+            color: #e74c3c;
+            font-size: 22px;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+        
+        .empty-state p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        .category-food { background-color: #ffeaa7; color: #d35400; }
+        .category-transport { background-color: #74b9ff; color: #192a56; }
+        .category-shopping { background-color: #fd79a8; color: #2d3436; }
+        .category-entertainment { background-color: #fdcb6e; color: #2d3436; }
+        .category-living { background-color: #6c5ce7; color: #f7f7f7; }
+        .category-medical { background-color: #e17055; color: #f7f7f7; }
+        .category-other { background-color: #a29bfe; color: #2d3436; }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .month-year-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .summary-item:hover {
+            background-color: #f9f9ff;
+            border-radius: 8px;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: #e74c3c;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .detail-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+        
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .detail-title {
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .detail-total {
+            font-size: 18px;
+            color: #e74c3c;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主页面 -->
+    <div id="main-page" class="page active">
+        <div class="header">
+            <h1>💰 精美记账</h1>
+            <p>轻松记录每一笔支出</p>
+        </div>
+        
+        <div class="input-section">
+            <div class="form-group">
+                <label for="amount">💰 支出金额</label>
+                <input type="number" id="amount" placeholder="输入支出金额" step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="category">🏷️ 分类</label>
+                <select id="category">
+                    <option value="餐饮">餐饮</option>
+                    <option value="交通">交通</option>
+                    <option value="购物">购物</option>
+                    <option value="娱乐">娱乐</option>
+                    <option value="生活用品">生活用品</option>
+                    <option value="医疗">医疗</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📝 备注</label>
+                <textarea id="description" placeholder="输入备注信息（可选）" rows="2"></textarea>
+            </div>
+            
+            <button id="add-record">➕ 添加支出记录</button>
+        </div>
+        
+        <div class="records-section">
+            <h2 class="section-title">📋 今日流水记录</h2>
+            <div id="records-list">
+                <!-- 记录将动态添加到这里 -->
+            </div>
+            <div class="total">
+                今日总支出: <span id="total-amount">¥0.00</span>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="nav-btn" id="month-btn">📅 月度记录</button>
+            <button class="nav-btn" id="year-btn"> yearly</button>
+        </div>
+    </div>
+    
+    <!-- 月度记录页面 -->
+    <div id="month-page" class="page">
+        <button class="back-btn" id="back-to-main">← 返回首页</button>
+        
+        <div class="month-year-section">
+            <h2 class="section-title">📅 月度记录</h2>
+            <div id="month-records">
+                <!-- 月度记录将动态添加到这里 -->
+            </div>
+            <div class="total">
+                月度总支出: <span id="month-total">¥0.00</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 月度详情页面 -->
+    <div id="month-detail-page" class="page">
+        <button class="back-btn" id="back-to-month">← 返回月度</button>
+        
+        <div class="detail-section">
+            <div class="detail-header">
+                <div class="detail-title" id="detail-date">日期详情</div>
+                <div class="detail-total" id="detail-total">¥0.00</div>
+            </div>
+            <div id="detail-records">
+                <!-- 详情记录将动态添加到这里 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 年度记录页面 -->
+    <div id="year-page" class="page">
+        <button class="back-btn" id="back-to-main-year">← 返回首页</button>
+        
+        <div class="month-year-section">
+            <h2 class="section-title"> yearly</h2>
+            <div id="year-records">
+                <!-- 年度记录将动态添加到这里 -->
+            </div>
+            <div class="total">
+                年度总支出: <span id="year-total">¥0.00</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 年度详情页面 -->
+    <div id="year-detail-page" class="page">
+        <button class="back-btn" id="back-to-year">← 返回年度</button>
+        
+        <div class="detail-section">
+            <div class="detail-header">
+                <div class="detail-title" id="detail-month">月份详情</div>
+                <div class="detail-total" id="detail-month-total">¥0.00</div>
+            </div>
+            <div id="detail-month-records">
+                <!-- 月份详情记录将动态添加到这里 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化数据
+        let records = JSON.parse(localStorage.getItem('expenseRecords')) || [];
+        const today = new Date().toISOString().split('T')[0];
+        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+        const currentYear = new Date().getFullYear().toString(); // YYYY
+        
+        // 当前页面状态
+        let currentPage = 'main';
+        let selectedDate = '';
+        let selectedMonth = '';
+        
+        // 切换页面函数
+        function showPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示指定页面
+            document.getElementById(pageId).classList.add('active');
+            currentPage = pageId;
+            
+            // 如果切换到月度或年度页面，重新渲染对应数据
+            if (pageId === 'month-page') {
+                renderMonthRecords();
+            } else if (pageId === 'year-page') {
+                renderYearRecords();
+            }
+        }
+        
+        // 过滤今天的记录
+        function getTodayRecords() {
+            return records.filter(record => record.date === today);
+        }
+        
+        // 过滤指定日期的记录
+        function getRecordsByDate(date) {
+            return records.filter(record => record.date === date);
+        }
+        
+        // 过滤指定月份的记录
+        function getRecordsByMonth(month) {
+            return records.filter(record => record.date.startsWith(month));
+        }
+        
+        // 过滤当前月的记录
+        function getMonthRecords() {
+            return records.filter(record => record.date.startsWith(currentMonth));
+        }
+        
+        // 过滤当前年的记录
+        function getYearRecords() {
+            return records.filter(record => record.date.startsWith(currentYear));
+        }
+        
+        // 按日期分组记录
+        function groupRecordsByDate(recordsArray) {
+            const grouped = {};
+            recordsArray.forEach(record => {
+                const date = record.date;
+                if (!grouped[date]) {
+                    grouped[date] = [];
+                }
+                grouped[date].push(record);
+            });
+            return grouped;
+        }
+        
+        // 按月份分组记录
+        function groupRecordsByMonth(recordsArray) {
+            const grouped = {};
+            recordsArray.forEach(record => {
+                const month = record.date.slice(0, 7); // YYYY-MM
+                if (!grouped[month]) {
+                    grouped[month] = [];
+                }
+                grouped[month].push(record);
+            });
+            return grouped;
+        }
+        
+        // 渲染今日记录
+        function renderRecords() {
+            const todayRecords = getTodayRecords();
+            const recordsList = document.getElementById('records-list');
+            
+            if (todayRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>暂无记录</p>
+                        <p>添加第一笔支出吧！</p>
+                    </div>
+                `;
+                document.getElementById('total-amount').textContent = '¥0.00';
+                return;
+            }
+            
+            recordsList.innerHTML = '';
+            
+            let total = 0;
+            
+            todayRecords.forEach((record, index) => {
+                total += record.amount;
+                
+                // 根据分类设置颜色
+                let categoryClass = 'record-category ';
+                switch(record.category) {
+                    case '餐饮':
+                        categoryClass += 'category-food';
+                        break;
+                    case '交通':
+                        categoryClass += 'category-transport';
+                        break;
+                    case '购物':
+                        categoryClass += 'category-shopping';
+                        break;
+                    case '娱乐':
+                        categoryClass += 'category-entertainment';
+                        break;
+                    case '生活用品':
+                        categoryClass += 'category-living';
+                        break;
+                    case '医疗':
+                        categoryClass += 'category-medical';
+                        break;
+                    default:
+                        categoryClass += 'category-other';
+                }
+                
+                const recordElement = document.createElement('div');
+                recordElement.className = 'record';
+                recordElement.innerHTML = `
+                    <div class="record-info">
+                        <div class="record-description">
+                            ${record.description || '无备注'}
+                        </div>
+                        <div>
+                            <span class="${categoryClass}">${record.category}</span>
+                            <span class="record-date">${formatTime(record.time)}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span class="record-amount">¥${record.amount.toFixed(2)}</span>
+                        <button class="delete-btn" data-time="${record.time}">🗑️</button>
+                    </div>
+                `;
+                
+                // 为删除按钮添加事件监听器
+                const deleteBtn = recordElement.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', function() {
+                    deleteRecord(record.time);
+                });
+                
+                recordsList.appendChild(recordElement);
+            });
+            
+            // 更新总金额
+            document.getElementById('total-amount').textContent = `¥${total.toFixed(2)}`;
+        }
+        
+        // 渲染月度记录
+        function renderMonthRecords() {
+            const monthRecords = getMonthRecords();
+            const recordsList = document.getElementById('month-records');
+            
+            if (monthRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>本月暂无记录</p>
+                    </div>
+                `;
+                document.getElementById('month-total').textContent = '¥0.00';
+                return;
+            }
+            
+            // 按日期分组
+            const grouped = groupRecordsByDate(monthRecords);
+            const dates = Object.keys(grouped).sort().reverse(); // 按日期倒序排列
+            
+            recordsList.innerHTML = '';
+            
+            let total = 0;
+            
+            dates.forEach(date => {
+                const dayRecords = grouped[date];
+                const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
+                total += dayTotal;
+                
+                const dateElement = document.createElement('div');
+                dateElement.className = 'summary-item';
+                dateElement.innerHTML = `
+                    <div>
+                        <div class="summary-label">${date}</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                            ${dayRecords.length} 笔记录
+                        </div>
+                    </div>
+                    <div class="summary-value">¥${dayTotal.toFixed(2)}</div>
+                `;
+                
+                // 添加点击事件查看详情
+                dateElement.addEventListener('click', function() {
+                    selectedDate = date;
+                    showPage('month-detail-page');
+                    renderMonthDetail();
+                });
+                
+                recordsList.appendChild(dateElement);
+            });
+            
+            // 更新总金额
+            document.getElementById('month-total').textContent = `¥${total.toFixed(2)}`;
+        }
+        
+        // 渲染月度详情
+        function renderMonthDetail() {
+            const dayRecords = getRecordsByDate(selectedDate);
+            const recordsList = document.getElementById('detail-records');
+            
+            document.getElementById('detail-date').textContent = `${selectedDate} 详细记录`;
+            
+            if (dayRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>该日期暂无记录</p>
+                    </div>
+                `;
+                document.getElementById('detail-total').textContent = '¥0.00';
+                return;
+            }
+            
+            recordsList.innerHTML = '';
+            
+            let total = 0;
+            
+            dayRecords.forEach(record => {
+                total += record.amount;
+                
+                // 根据分类设置颜色
+                let categoryClass = 'record-category ';
+                switch(record.category) {
+                    case '餐饮':
+                        categoryClass += 'category-food';
+                        break;
+                    case '交通':
+                        categoryClass += 'category-transport';
+                        break;
+                    case '购物':
+                        categoryClass += 'category-shopping';
+                        break;
+                    case '娱乐':
+                        categoryClass += 'category-entertainment';
+                        break;
+                    case '生活用品':
+                        categoryClass += 'category-living';
+                        break;
+                    case '医疗':
+                        categoryClass += 'category-medical';
+                        break;
+                    default:
+                        categoryClass += 'category-other';
+                }
+                
+                const recordElement = document.createElement('div');
+                recordElement.className = 'record';
+                recordElement.innerHTML = `
+                    <div class="record-info">
+                        <div class="record-description">
+                            ${record.description || '无备注'}
+                        </div>
+                        <div>
+                            <span class="${categoryClass}">${record.category}</span>
+                            <span class="record-date">${formatTime(record.time)}</span>
+                        </div>
+                    </div>
+                    <div class="record-amount">¥${record.amount.toFixed(2)}</div>
+                `;
+                
+                recordsList.appendChild(recordElement);
+            });
+            
+            // 更新总金额
+            document.getElementById('detail-total').textContent = `¥${total.toFixed(2)}`;
+        }
+        
+        // 渲染年度记录
+        function renderYearRecords() {
+            const yearRecords = getYearRecords();
+            const recordsList = document.getElementById('year-records');
+            
+            if (yearRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>本年暂无记录</p>
+                    </div>
+                `;
+                document.getElementById('year-total').textContent = '¥0.00';
+                return;
+            }
+            
+            // 按月份分组
+            const grouped = groupRecordsByMonth(yearRecords);
+            const months = Object.keys(grouped).sort().reverse(); // 按月份倒序排列
+            
+            recordsList.innerHTML = '';
+            
+            let total = 0;
+            
+            months.forEach(month => {
+                const monthRecords = grouped[month];
+                const monthTotal = monthRecords.reduce((sum, record) => sum + record.amount, 0);
+                total += monthTotal;
+                
+                const monthElement = document.createElement('div');
+                monthElement.className = 'summary-item';
+                monthElement.innerHTML = `
+                    <div>
+                        <div class="summary-label">${month}</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                            ${monthRecords.length} 笔记录
+                        </div>
+                    </div>
+                    <div class="summary-value">¥${monthTotal.toFixed(2)}</div>
+                `;
+                
+                // 添加点击事件查看详情
+                monthElement.addEventListener('click', function() {
+                    selectedMonth = month;
+                    showPage('year-detail-page');
+                    renderYearDetail();
+                });
+                
+                recordsList.appendChild(monthElement);
+            });
+            
+            // 更新总金额
+            document.getElementById('year-total').textContent = `¥${total.toFixed(2)}`;
+        }
+        
+        // 渲染年度详情
+        function renderYearDetail() {
+            const monthRecords = getRecordsByMonth(selectedMonth);
+            const recordsList = document.getElementById('detail-month-records');
+            
+            document.getElementById('detail-month').textContent = `${selectedMonth} 详细记录`;
+            
+            if (monthRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>该月份暂无记录</p>
+                    </div>
+                `;
+                document.getElementById('detail-month-total').textContent = '¥0.00';
+                return;
+            }
+            
+            // 按日期分组
+            const grouped = groupRecordsByDate(monthRecords);
+            const dates = Object.keys(grouped).sort().reverse(); // 按日期倒序排列
+            
+            recordsList.innerHTML = '';
+            
+            let total = 0;
+            
+            dates.forEach(date => {
+                const dayRecords = grouped[date];
+                const dayTotal = dayRecords.reduce((sum, record) => sum + record.amount, 0);
+                total += dayTotal;
+                
+                // 添加日期分组标题
+                const dateHeader = document.createElement('div');
+                dateHeader.className = 'record';
+                dateHeader.style.background = '#f9f9ff';
+                dateHeader.style.margin = '10px 0';
+                dateHeader.style.borderRadius = '8px';
+                dateHeader.innerHTML = `
+                    <div class="record-info">
+                        <div class="record-description">${date}</div>
+                    </div>
+                    <div class="record-amount">¥${dayTotal.toFixed(2)}</div>
+                `;
+                
+                recordsList.appendChild(dateHeader);
+                
+                // 添加该日期的每条记录
+                dayRecords.forEach(record => {
+                    // 根据分类设置颜色
+                    let categoryClass = 'record-category ';
+                    switch(record.category) {
+                        case '餐饮':
+                            categoryClass += 'category-food';
+                            break;
+                        case '交通':
+                            categoryClass += 'category-transport';
+                            break;
+                        case '购物':
+                            categoryClass += 'category-shopping';
+                            break;
+                        case '娱乐':
+                            categoryClass += 'category-entertainment';
+                            break;
+                        case '生活用品':
+                            categoryClass += 'category-living';
+                            break;
+                        case '医疗':
+                            categoryClass += 'category-medical';
+                            break;
+                        default:
+                            categoryClass += 'category-other';
+                    }
+                    
+                    const recordElement = document.createElement('div');
+                    recordElement.className = 'record';
+                    recordElement.style.paddingLeft = '20px';
+                    recordElement.innerHTML = `
+                        <div class="record-info">
+                            <div class="record-description">
+                                ${record.description || '无备注'}
+                            </div>
+                            <div>
+                                <span class="${categoryClass}">${record.category}</span>
+                                <span class="record-date">${formatTime(record.time)}</span>
+                            </div>
+                        </div>
+                        <div class="record-amount">¥${record.amount.toFixed(2)}</div>
+                    `;
+                    
+                    recordsList.appendChild(recordElement);
+                });
+            });
+            
+            // 更新总金额
+            document.getElementById('detail-month-total').textContent = `¥${total.toFixed(2)}`;
+        }
+        
+        // 格式化时间显示
+        function formatTime(timeString) {
+            const date = new Date(timeString);
+            return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        // 添加记录
+        document.getElementById('add-record').addEventListener('click', function() {
+            const amountInput = document.getElementById('amount');
+            const categorySelect = document.getElementById('category');
+            const descriptionInput = document.getElementById('description');
+            
+            const amount = parseFloat(amountInput.value);
+            const category = categorySelect.value;
+            const description = descriptionInput.value.trim();
+            
+            if (isNaN(amount) || amount <= 0) {
+                alert('请输入有效的金额');
+                return;
+            }
+            
+            const newRecord = {
+                amount: amount,
+                category: category,
+                description: description,
+                date: today,
+                time: new Date().toISOString()
+            };
+            
+            records.push(newRecord);
+            localStorage.setItem('expenseRecords', JSON.stringify(records));
+            
+            // 清空输入框
+            amountInput.value = '';
+            descriptionInput.value = '';
+            
+            // 重新渲染
+            renderRecords();
+        });
+        
+        // 删除记录
+        function deleteRecord(time) {
+            if (confirm('确定要删除这条记录吗？')) {
+                // 从总记录中删除对应时间的记录
+                records = records.filter(r => r.time !== time);
+                localStorage.setItem('expenseRecords', JSON.stringify(records));
+                
+                // 重新渲染
+                renderRecords();
+            }
+        }
+        
+        // 页面加载时渲染记录
+        window.onload = function() {
+            renderRecords();
+            
+            // 绑定导航按钮事件
+            document.getElementById('month-btn').addEventListener('click', function() {
+                showPage('month-page');
+            });
+            
+            document.getElementById('year-btn').addEventListener('click', function() {
+                showPage('year-page');
+            });
+            
+            document.getElementById('back-to-main').addEventListener('click', function() {
+                showPage('main-page');
+            });
+            
+            document.getElementById('back-to-main-year').addEventListener('click', function() {
+                showPage('main-page');
+            });
+            
+            document.getElementById('back-to-month').addEventListener('click', function() {
+                showPage('month-page');
+            });
+            
+            document.getElementById('back-to-year').addEventListener('click', function() {
+                showPage('year-page');
+            });
+        };
+        
+        // 添加回车键支持
+        document.getElementById('amount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('add-record').click();
+            }
+        });
+    </script>
+</body>
+</html>
